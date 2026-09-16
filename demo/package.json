@@ -1,0 +1,15 @@
+{
+  "name": "wecomp-demo-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Exemplo de teste E2E gerado a partir de um bom pedido",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "relatorio": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.1"
+  }
+}
