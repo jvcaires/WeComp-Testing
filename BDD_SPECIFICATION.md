@@ -53,7 +53,25 @@ Este arquivo é o pano de fundo dos requisitos `RQ-*.md` da raiz e dos testes qu
 | AUT-4 | Usuário preenchido e senha vazia produz `Epic sadface: Password is required` | sim |
 | AUT-5 | Par inexistente produz `Epic sadface: Username and password do not match any user in this service` | sim |
 | AUT-6 | `locked_out_user` produz `Epic sadface: Sorry, this user has been locked out.` | sim |
-| AUT-7 | Acesso direto a `/inventory.html` sem sessão mantém a URL e exibe `Epic sadface: You can only access '/inventory.html' when you are logged in.` | sim |
+| AUT-7 | Acesso direto a `/inventory.html` sem sessão exibe `Epic sadface: You can only access '/inventory.html' when you are logged in.` e **redireciona para `/`** | sim, medido |
+
+> **AUT-7 foi corrigida por medição, em 2026-09-21.** A versão anterior desta
+> tabela afirmava que a URL **se mantinha** em `/inventory.html`. Ela não se
+> mantém. A sequência real, amostrada a cada 400 ms:
+>
+> ```
+>  73ms  /inventory.html          ← requisição, HTTP 404
+> 109ms  /?/inventory.html
+> 113ms  /inventory.html
+> 385ms  /inventory.html
+> 388ms  /                        ← estabiliza aqui
+> ```
+>
+> A observação original foi feita dentro da janela de ~390 ms, quando a URL
+> ainda era `/inventory.html`. É a **armadilha 1 da §9** aplicada a quem
+> escreveu a especificação: esperar pela URL não é esperar pela tela. A
+> mensagem permanece visível depois do redirecionamento, e é sobre ela que se
+> deve afirmar.
 
 > **AUT-3 é a regra que mais engana.** A validação de usuário vem antes da de senha,
 > então "senha obrigatória" só aparece quando o usuário já está preenchido. Um critério
