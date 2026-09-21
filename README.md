@@ -56,6 +56,28 @@ npm test          # deve sair "5 passed" em ~5 segundos
 
 Detalhes, prompts e o que dizer em cada momento: [`demo/README.md`](demo/README.md).
 
+## Como se contribui aqui
+
+A `main` é protegida: **push direto é rejeitado, mesmo para o dono do
+repositório.** Toda alteração entra por pull request.
+
+```bash
+git switch -c minha-alteracao
+# ... edita, commita ...
+git push -u origin minha-alteracao
+gh pr create --fill          # ou abra pelo site
+```
+
+Ao abrir o PR, o workflow [`testes`](.github/workflows/testes.yml) roda a suíte
+do `demo/` contra a loja e publica o resultado no próprio PR. Ele **não** é um
+check obrigatório: a suíte depende de alcançar o `saucedemo.com` pela rede, e
+uma instabilidade da loja não deve impedir um merge.
+
+Nenhuma aprovação é exigida — o repositório tem um autor só, e o GitHub não
+permite aprovar o próprio PR. O portão que existe é o do processo: a alteração
+fica visível, revisável e comentável antes de entrar. A branch é apagada
+sozinha depois do merge.
+
 ## Compliance
 
 O repositório é **autocontido e anônimo**. Não cita empresa, produto interno,
