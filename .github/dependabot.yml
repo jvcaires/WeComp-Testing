@@ -1,0 +1,37 @@
+# Mantém as dependências em dia por pull request, não por surpresa.
+#
+# Os alertas de segurança do Dependabot só disparam quando existe CVE
+# publicada — o que no Playwright é raro. Esta configuração é o que de fato
+# abre PR quando sai versão nova, e é ela que impede o cenário do PR #2:
+# descobrir no dia da palestra que o CI subiu cinco versões menores sozinho.
+
+version: 2
+
+updates:
+  # A suíte da demo.
+  - package-ecosystem: npm
+    directory: /demo
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: deps
+    labels:
+      - dependencias
+
+  # As actions usadas no workflow de testes.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: ci
+    labels:
+      - dependencias
