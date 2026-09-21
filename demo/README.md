@@ -8,6 +8,7 @@ não some no meio da palestra**.
 | --- | --- |
 | [`prompts.md`](prompts.md) | Os quatro pedidos, prontos para colar, com o que dizer em cada um |
 | [`checkout-totais.spec.ts`](checkout-totais.spec.ts) | O resultado do ato 2 — já validado, serve de plano B |
+| [`login.spec.ts`](login.spec.ts) | As 7 regras de autenticação da especificação, com o caso que corrigiu a própria especificação |
 | `playwright.config.ts` · `package.json` | O mínimo para rodar |
 
 As quatro regras que sustentam este exemplo estão listadas em
@@ -22,7 +23,11 @@ npx playwright install chromium
 npm test
 ```
 
-Deve sair **5 passed** em cerca de 5 segundos. Se sair, a demo está pronta.
+Deve sair **15 passed** em cerca de 12 segundos. Se sair, a demo está pronta.
+
+> A primeira execução numa máquina fria leva bem mais — medimos 29 s, contra
+> 4,5 s na segunda. É lançamento de navegador, DNS e TLS, não lentidão da
+> suíte. Motivo de sobra para rodar **antes** de subir ao palco.
 
 Úteis no palco: `npm run test:headed` (mostra o navegador, bom para plateia),
 `npm run test:ui` (modo interativo) e `npm run relatorio` (abre o relatório HTML
