@@ -46,10 +46,16 @@ jobs:
       - name: Rodar os testes
         run: npx playwright test --retries=1
 
-      - name: Guardar o relatório quando falhar
-        if: failure()
+      # always(), não failure(): com screenshot: 'on' a execução produz
+      # evidência de cada teste aprovado, e descartá-la quando tudo passa
+      # esvaziaria o motivo de capturá-la.
+      - name: Guardar o relatório e as capturas
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report
-          path: demo/playwright-report/
+          path: |
+            demo/playwright-report/
+            demo/test-results/
           retention-days: 7
+          if-no-files-found: warn

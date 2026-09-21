@@ -30,8 +30,23 @@ Deve sair **15 passed** em cerca de 12 segundos. Se sair, a demo está pronta.
 > suíte. Motivo de sobra para rodar **antes** de subir ao palco.
 
 Úteis no palco: `npm run test:headed` (mostra o navegador, bom para plateia),
-`npm run test:ui` (modo interativo) e `npm run relatorio` (abre o relatório HTML
-depois de uma falha).
+`npm run test:ui` (modo interativo) e `npm run relatorio` (abre o relatório HTML).
+
+## Evidência de cada execução
+
+`screenshot: 'on'` na configuração guarda **uma imagem por teste, passe ou
+falhe** — em `test-results/`, e embutidas no relatório HTML:
+
+| Arquivo | Quando |
+| --- | --- |
+| `test-finished-1.png` | Teste aprovado, estado final |
+| `test-failed-1.png` | Teste reprovado, no ponto exato da falha |
+
+É deliberado guardar as duas. "Passou" sem imagem é uma afirmação sobre um
+estado que ninguém olhou — e a plateia costuma perguntar justamente isso.
+
+No CI as duas coisas sobem como artefato em **toda** execução, não só nas que
+falham, e ficam disponíveis por 7 dias na página do run.
 
 ## O que este exemplo demonstra
 
