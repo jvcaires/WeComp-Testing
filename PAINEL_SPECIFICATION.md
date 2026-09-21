@@ -68,9 +68,9 @@ que a plateia leva para casa.
 | --- | --- | --- | --- |
 | `BDD_SPECIFICATION.md` | As 42 regras e as 6 áreas, os 11 defeitos plantados, as 5 perguntas em aberto | Contagem das linhas de regra por prefixo | **presente** |
 | `RQ-*.md` da raiz | Requisitos e seus `CT` | Contagem de arquivos e de `CT-` | **ausente** — nenhum requisito escrito ainda |
-| `demo/checkout-totais.spec.ts` | Os testes executáveis | Leitura das asserções, mapeadas para regras | **presente** — 5 testes |
+| `demo/*.spec.ts` | Os testes executáveis | Leitura das asserções, mapeadas para regras | **presente** — 2 arquivos, 15 testes |
 | Execução do Playwright | Tempo, resultado, instabilidade | `npx playwright test --reporter=json` | **presente** |
-| Mutações do ato 3 | Poder de detecção | Registro manual: aplicada, morta ou sobrevivente | **presente** — 2 mutações |
+| Mutações do ato 3 | Poder de detecção | Registro manual: aplicada, morta ou sobrevivente | **presente** — 5 mutações |
 | Cobertura de linha do produto | — | — | **impossível** — o código da loja não é nosso |
 
 > **A coluna "Estado" não é decoração.** Ela decide se a métrica vira número, vira barra
@@ -161,12 +161,24 @@ documentados e reproduzíveis**. É um gabarito — raríssimo em produto real.
 
 | Mutação | Efeito observado | Resultado |
 | --- | --- | --- |
-| Alíquota 0,08 → 0,09 | 4 dos 5 testes ficam vermelhos; o do contador segue verde, e corretamente | morta |
+| Alíquota 0,08 → 0,09 | 4 dos 15 testes ficam vermelhos; o do contador segue verde, e corretamente | morta |
 | Produto renomeado para inexistente | Falha com `SETUP: produto "..." não está na vitrine` | morta |
+| Mensagem esperada de usuário obrigatório alterada | Os 2 testes de `AUT-3` ficam vermelhos, e só eles | morta |
+| `AUT-7` volta a esperar `/inventory.html` | `AUT-7` fica vermelho — reintroduz o erro que a especificação tinha | morta |
+| Catálogo esperado de 6 para 5 produtos | `AUT-2` e `performance_glitch_user` ficam vermelhos | morta |
 
-**Apuração:** 2 de 2 → 100% — **e o painel não exibe esse 100% como nota**. Com
-denominador menor que 5, a métrica entra como `insuficiente` (regra HON-4). Cem por cento
-de duas tentativas não é evidência, é anedota.
+**Apuração:** 5 de 5 → 100%, **e o painel continua não exibindo isso como nota** — agora por
+um motivo melhor que o denominador.
+
+> **O denominador chegou a 5, e a métrica mesmo assim ficou fora do índice.** Apurando as
+> mutações descobrimos um limite da técnica que esta especificação não havia previsto: como
+> não podemos alterar o produto de terceiros, mutamos o **valor esperado no teste**. Isso só
+> permite mutar aquilo que **já é afirmado** — sobrevivente é impossível por construção, e
+> uma métrica que não pode dar errado não é medição.
+>
+> O que ela mede de fato é **sensibilidade das asserções existentes**, não cobertura. É
+> informação útil, e por isso fica na tela; só não vira nota. A pergunta `PP3` deixa de ser
+> "qual o mínimo?" e passa a ser "esta técnica pode virar nota alguma vez?".
 
 ### 4.5 Maturidade do requisito
 
@@ -181,8 +193,8 @@ Três contagens simples, sem nota:
 
 ### 4.6 Execução
 
-Tempo total, contagem passou/falhou e instabilidade conhecida. Hoje: **5 testes, ~5 s,
-5 passando**. A armadilha 1 da especificação (cabeçalho atrasado, 1 ocorrência em ~6) entra
+Tempo total, contagem passou/falhou e instabilidade conhecida. Hoje: **15 testes, 14,4 s,
+15 passando**, em 2 arquivos. A armadilha 1 da especificação (cabeçalho atrasado, 1 ocorrência em ~6) entra
 como **instabilidade conhecida**, com a contagem à vista — não como "flaky" sem número.
 
 ---
@@ -194,35 +206,52 @@ disponível — igual à do painel existente.
 
 | Componente | Peso | Valor hoje |
 | --- | --- | --- |
-| Cobertura de regras | 35 | 14,3 |
-| Detecção de defeitos plantados | 30 | 0,0 |
+| Cobertura de regras | 35 | 28,6 |
+| Detecção de defeitos plantados | 30 | 9,1 |
 | Alcance por área | 20 | 50,0 |
-| Poder de detecção (mutação) | 15 | `insuficiente` (n = 2) |
+| Poder de detecção (mutação) | 15 | `não entra` (ver §4.4) |
 | Cobertura de linha | — | `impossível` |
 
 ```
-(14,3 × 35) + (0,0 × 30) + (50,0 × 20)   1.500,5
-────────────────────────────────────── = ─────── = 17,7  →  índice 18
+(28,6 × 35) + (9,1 × 30) + (50,0 × 20)   2.272,7
+────────────────────────────────────── = ─────── = 26,7  →  índice 27
             35 + 30 + 20                     85
 ```
 
-O painel exibe **18** e, ao lado, **"3 de 5 insumos"**. Um índice que não diz de quantos
+O painel exibe **27** e, ao lado, **"3 de 5 insumos"**. Um índice que não diz de quantos
 insumos ele saiu é um número que finge saber mais do que sabe.
 
 ---
 
 ## 6. Apuração de hoje
 
-Retrato de 2026-09-18, para conferência rápida no palco:
+Retrato de 2026-09-21, para conferência rápida no palco:
 
-| Métrica | Valor | Fração |
-| --- | --- | --- |
-| Cobertura de regras | 14,3% | 6 / 42 |
-| Alcance por área | 50,0% | 3 / 6 |
-| Detecção de defeitos plantados | 0,0% | 0 / 11 |
-| Poder de detecção | insuficiente | 2 / 2 mutações |
-| Cobertura de linha | impossível | — |
-| Índice de prontidão | **18** | 3 de 5 insumos |
+| Métrica | Valor | Fração | Era em 18/09 |
+| --- | --- | --- | --- |
+| Cobertura de regras | 28,6% | 12 / 42 | 14,3% · 6 / 42 |
+| Alcance por área | 50,0% | 3 / 6 | 50,0% · 3 / 6 |
+| Detecção de defeitos plantados | 9,1% | 1 / 11 | 0,0% · 0 / 11 |
+| Poder de detecção | não entra | 5 / 5 mutações | insuficiente · 2 / 2 |
+| Cobertura de linha | impossível | — | impossível |
+| Índice de prontidão | **27** | 3 de 5 insumos | **18** |
+
+**O que mudou, e por quê.** Entraram 10 casos de login, cobrindo `AUT-1` a `AUT-7` — as 7
+regras de Autenticação passaram de 1 coberta para 7. O `locked_out_user` virou o primeiro
+defeito plantado detectado, porque `AUT-6` afirma a mensagem de bloqueio.
+
+**O que não mudou, e é o mais interessante.** O alcance por área ficou em 50,0%: a suíte
+aprofundou onde já estava, em vez de encostar em área nova. Vitrine, Checkout passo 1 e
+Conclusão seguem fora. Dobrar a cobertura de regras sem mover o alcance é exatamente o
+retrato de uma suíte que fica melhor e continua estreita.
+
+> O `performance_glitch_user` **não** conta como defeito detectado, embora a suíte execute
+> com ele. O teste tolera a lentidão em vez de afirmá-la: se o atraso de ~5 s desaparecesse,
+> nenhum teste ficaria vermelho. É a definição de `Regra coberta` aplicada com rigor contra
+> o nosso próprio trabalho.
+
+O painel construído a partir desta especificação está em
+[`painel-da-suite/painel.html`](painel-da-suite/painel.html) e é a fonte do retrato corrente.
 
 ---
 

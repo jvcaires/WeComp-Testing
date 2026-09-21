@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="escuro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qualidade da Suíte</title>
+<style>
+  :root {
+    --surface: #1a1a19;
+    --plane: #0d0d0d;
+    --card: #1f1f1e;
+    --ink: #ffffff;
+    --ink2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --accent: #3987e5;
+    --accent-soft: rgba(57, 135, 229, 0.16);
+    --context: #3a3a37;
+    --serie2: #d95926;
+    --good: #0ca30c;
+    --warning: #fab219;
+    --critical: #d03b3b;
+  }
+  :root[data-tema="claro"] {
+    --surface: #fcfcfb;
+    --plane: #f2f2ef;
+    --card: #ffffff;
+    --ink: #0b0b0b;
+    --ink2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --accent: #2a78d6;
+    --accent-soft: rgba(42, 120, 214, 0.12);
+    --context: #d9d8d2;
+    --serie2: #eb6834;
+    --good: #0a8a0a;
+    --warning: #b07c05;
+    --critical: #b62f2f;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--plane);
+    color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 32px 28px 64px;
+  }
+  .wrap { max-width: 1320px; margin: 0 auto; }
+  .n { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-variant-numeric: tabular-nums; }
+
+  header { border-bottom: 1px solid var(--grid); padding-bottom: 18px; margin-bottom: 24px; }
+  h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .sub { color: var(--ink2); font-size: 14px; }
+  .sub strong { color: var(--ink); font-weight: 600; }
+  .atalhos { margin-top: 12px; font-size: 12.5px; color: var(--muted); }
+  kbd {
+    font-family: ui-monospace, Consolas, monospace; font-size: 11.5px;
+    border: 1px solid var(--grid); border-radius: 4px; padding: 1px 5px;
+    background: var(--card); color: var(--ink2);
+  }
+
+  nav { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 22px; }
+  nav button {
+    font: inherit; font-size: 14px; cursor: pointer;
+    background: transparent; color: var(--ink2);
+    border: 1px solid var(--grid); border-radius: 7px; padding: 7px 14px;
+  }
+  nav button[aria-selected="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); font-weight: 600; }
+  nav button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .aba { display: none; }
+  .aba.ativa { display: block; }
+
+  .grade { display: grid; gap: 16px; }
+  .g-hero { grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); }
+  .g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 1000px) { .g-hero, .g-2 { grid-template-columns: minmax(0, 1fr); } }
+
+  .card {
+    background: var(--card); border: 1px solid var(--grid);
+    border-radius: 12px; padding: 18px 20px;
+  }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin: 0 0 14px; font-weight: 600; }
+  .card h3 { font-size: 14px; margin: 20px 0 10px; color: var(--ink2); font-weight: 600; }
+
+  .figurao { font-size: 68px; line-height: 1; font-weight: 700; letter-spacing: -0.03em; }
+  .figurao.azul { color: var(--accent); }
+  .de-quantos { margin-top: 10px; font-size: 14px; color: var(--ink2); }
+  .de-quantos .chip { margin-top: 8px; }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; border-radius: 999px; padding: 3px 10px;
+    border: 1px solid var(--grid); background: var(--surface); color: var(--ink2);
+  }
+  .chip.alerta { border-color: var(--warning); color: var(--ink); }
+  .chip.impossivel { border-color: var(--critical); color: var(--ink); }
+  .chip .pt { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; }
+  .chip.alerta .pt { background: var(--warning); }
+  .chip.impossivel .pt { background: var(--critical); }
+  .chip.ok .pt { background: var(--good); }
+
+  .linha-medida { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 13px 0; border-top: 1px solid var(--grid); }
+  .linha-medida:first-of-type { border-top: 0; }
+  .lm-topo { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .lm-rot { font-size: 14px; }
+  .lm-peso { font-size: 11.5px; color: var(--muted); margin-left: 7px; }
+  .lm-val { font-size: 14px; white-space: nowrap; }
+  .frac { color: var(--muted); font-size: 12.5px; margin-left: 7px; }
+
+  /* Barra: marca fina, extremidade arredondada de 4px, ancorada na base. */
+  .barra { position: relative; height: 9px; background: var(--context); border-radius: 4px; overflow: hidden; }
+  .barra > i { display: block; height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; }
+  .barra > i.laranja { background: var(--serie2); }
+  .barra > i.vazia { background: repeating-linear-gradient(135deg, var(--context) 0 4px, transparent 4px 8px); }
+  .barra .marca { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink2); opacity: 0.75; }
+  .barra-rotulo-meta { font-size: 11px; color: var(--muted); }
+
+  .nota { font-size: 13px; color: var(--ink2); border-left: 2px solid var(--grid); padding-left: 12px; margin-top: 14px; }
+  .nota b { color: var(--ink); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 9px 18px 9px 0; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th:last-child, td:last-child { padding-right: 0; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  td.num, th.num { text-align: right; }
+  td.esq { text-align: left; }
+  tr:last-child td { border-bottom: 0; }
+  .col-medida { width: 32%; min-width: 150px; }
+  .col-conta { width: 22%; }
+  .col-estreita { width: 1%; white-space: nowrap; }
+
+  .ids { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; align-content: flex-start; }
+  .id {
+    font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; white-space: nowrap;
+    border: 1px solid var(--grid); border-radius: 5px; padding: 2px 7px; color: var(--ink2);
+  }
+  .id.coberta { border-color: var(--accent); color: var(--ink); background: var(--accent-soft); }
+  .id.parcial { border-color: var(--serie2); color: var(--ink); }
+
+  .estados { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink2); margin-top: 10px; }
+  .estados span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 11px; height: 11px; border-radius: 3px; flex: 0 0 auto; }
+  .sw.coberta { background: var(--accent); }
+  .sw.parcial { background: var(--serie2); }
+  .sw.descoberta { background: var(--context); }
+
+  footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--grid); font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<script type="application/json" id="dados">
+{
+  "geradoEm": "2026-09-21",
+  "alvo": {
+    "loja": "https://www.saucedemo.com/",
+    "contas": ["standard_user", "locked_out_user", "performance_glitch_user"]
+  },
+
+  "regras": {
+    "total": 42,
+    "listaCobertas": ["AUT-1","AUT-2","AUT-3","AUT-4","AUT-5","AUT-6","AUT-7","CAR-1","CAR-3","CK2-4","CK2-5","CK2-6"],
+    "listaParciais": ["VIT-1","CK1-1","CK2-1","CAR-4"],
+    "porArea": {
+      "Autenticação":      { "total": 7,  "cobertas": 7, "parciais": 0 },
+      "Vitrine":           { "total": 7,  "cobertas": 0, "parciais": 1 },
+      "Carrinho":          { "total": 10, "cobertas": 2, "parciais": 1 },
+      "Checkout passo 1":  { "total": 6,  "cobertas": 0, "parciais": 1 },
+      "Checkout passo 2":  { "total": 7,  "cobertas": 3, "parciais": 1 },
+      "Conclusão":         { "total": 5,  "cobertas": 0, "parciais": 0 }
+    },
+    "porqueParcial": {
+      "VIT-1": "O teste afirma os 6 produtos, mas não nome, descrição, preço nem botão de cada um",
+      "CK1-1": "Preenche os três campos no caminho feliz, sem provar obrigatoriedade",
+      "CK2-1": "Chega ao resumo, mas não afirma a lista de itens",
+      "CAR-4": "Navega com carrinho cheio, sem afirmar a persistência"
+    }
+  },
+
+  "defeitosPlantados": {
+    "total": 11,
+    "porConta": {
+      "problem_user":            { "total": 3, "detectados": 0, "nota": "a suíte não executa com esta conta" },
+      "error_user":              { "total": 3, "detectados": 0, "nota": "a suíte não executa com esta conta" },
+      "visual_user":             { "total": 3, "detectados": 0, "nota": "a suíte não executa com esta conta" },
+      "performance_glitch_user": { "total": 1, "detectados": 0, "nota": "a suíte entra com esta conta, mas tolera a lentidão em vez de afirmá-la" },
+      "locked_out_user":         { "total": 1, "detectados": 1, "nota": "AUT-6 afirma a mensagem de bloqueio: se a conta voltasse a entrar, o teste reprovaria" }
+    }
+  },
+
+  "mutacao": {
+    "aplicadas": 5,
+    "mortas": 5,
+    "sobreviventes": 0,
+    "minimoParaNota": 5,
+    "estado": "naoEntra",
+    "motivo": "a técnica muta o valor esperado no teste, não o produto: sobrevivente é impossível por construção",
+    "lista": [
+      { "mutacao": "Alíquota 0,08 → 0,09", "efeito": "4 de 15 testes vermelhos; o do contador segue verde, e corretamente", "resultado": "morta" },
+      { "mutacao": "Produto renomeado para inexistente", "efeito": "falha com SETUP: produto \"…\" não está na vitrine", "resultado": "morta" },
+      { "mutacao": "Mensagem esperada de usuário obrigatório alterada", "efeito": "os 2 testes de AUT-3 vermelhos, e só eles", "resultado": "morta" },
+      { "mutacao": "AUT-7 volta a esperar /inventory.html", "efeito": "AUT-7 vermelho — reintroduz o erro que a especificação tinha", "resultado": "morta" },
+      { "mutacao": "Catálogo esperado de 6 para 5 produtos", "efeito": "AUT-2 e performance_glitch_user vermelhos", "resultado": "morta" }
+    ]
+  },
+
+  "requisitos": { "arquivos": 0, "ct": 0, "ctAutomatizados": 0, "perguntasEmAberto": 5 },
+
+  "execucao": {
+    "arquivos": 2,
+    "testes": 15,
+    "passou": 15,
+    "falhou": 0,
+    "duracaoSegundos": 14.4,
+    "maisLento": { "teste": "performance_glitch_user entra, só devagar", "ms": 5577 },
+    "maisRapido": { "teste": "a asserção de login bem-sucedido reprova credencial errada", "ms": 546 },
+    "primeiraExecucaoFria": { "segundos": 29.3, "nota": "lançamento de navegador, DNS e TLS — não é lentidão da suíte" },
+    "instabilidadesConhecidas": [
+      { "descricao": "cabeçalho atrasado após navegação por clique", "ocorrencias": 1, "execucoes": 6 }
+    ]
+  },
+
+  "coberturaLinha": {
+    "valor": null,
+    "estado": "impossivel",
+    "motivo": "o código da loja é de terceiros — não é um dado que falta, é um dado que não existe"
+  },
+
+  "indice": {
+    "insumosTotais": 5,
+    "componentes": [
+      { "chave": "coberturaRegras",  "rotulo": "Cobertura de regras",  "peso": 35 },
+      { "chave": "deteccaoDefeitos", "rotulo": "Defeitos plantados",   "peso": 30 },
+      { "chave": "alcanceAreas",     "rotulo": "Alcance por área",     "peso": 20 },
+      { "chave": "poderDeteccao",    "rotulo": "Poder de detecção",    "peso": 15 },
+      { "chave": "coberturaLinha",   "rotulo": "Cobertura de linha",   "peso": 0  }
+    ]
+  },
+
+  "perguntasEmAbertoDoPainel": [
+    "PP1 — a cobertura de regras deve ponderar regra por risco?",
+    "PP2 — regra parcial merece um estado próprio na barra, ou basta a lista nomeada?",
+    "PP3 — qual o mínimo de mutações para virar nota? O 5 foi escolhido, não medido",
+    "PP4 — guardar retratos anteriores para mostrar tendência?",
+    "PP5 — instabilidade conhecida entra no índice ou fica só descritiva?"
+  ]
+}
+</script>
+
+<div class="wrap">
+  <header>
+    <h1>Qualidade da Suíte — WeComp</h1>
+    <div class="sub">
+      Do que a especificação diz que este produto faz, <strong>quanto a nossa suíte de fato prova?</strong>
+    </div>
+    <div class="sub" style="margin-top:8px">
+      Retrato de <span class="n" id="cab-data"></span> ·
+      alvo <span class="n" id="cab-alvo"></span> ·
+      contas <span class="n" id="cab-contas"></span>
+    </div>
+    <div class="atalhos">
+      <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> abas ·
+      <kbd>←</kbd><kbd>→</kbd> anda ·
+      <kbd>T</kbd> tema
+    </div>
+  </header>
+
+  <nav id="nav" role="tablist"></nav>
+
+  <!-- ABA 1 -->
+  <section class="aba ativa" id="aba-1" role="tabpanel">
+    <div class="grade g-hero">
+      <div class="card">
+        <h2>Índice de prontidão</h2>
+        <div class="figurao azul n" id="indice-valor"></div>
+        <div class="de-quantos">
+          <div id="indice-insumos"></div>
+          <div class="chip alerta"><span class="pt"></span>Um índice sem essa contagem finge saber mais do que sabe</div>
+        </div>
+        <div class="nota" style="margin-top:22px">
+          "Esta suíte está certa. Cada linha dela está certa. E ela prova
+          <b><span class="n" id="fala-pct"></span> do que a gente já sabe</b> que este produto faz —
+          porque provar é caro, e escrever teste ficou barato. A IA mexeu no segundo número,
+          não no primeiro."
+        </div>
+      </div>
+      <div class="card">
+        <h2>Componentes</h2>
+        <div id="componentes"></div>
+        <div class="nota">
+          Dois componentes <b>não entram na conta</b>, e aparecem nomeados em vez de virarem zero.
+          Somar denominadores diferentes numa fração só produziria um número mais bonito e mais falso.
+        </div>
+      </div>
+    </div>
+
+    <div class="grade g-2" style="margin-top:16px">
+      <div class="card">
+        <h2>Cobertura de linha</h2>
+        <div class="chip impossivel"><span class="pt"></span>impossível</div>
+        <p class="sub" style="margin:12px 0 0" id="cob-linha-motivo"></p>
+        <div class="nota">
+          <b>Impossível</b> e <b>ausente</b> são estados diferentes. Ausente é um dado que existiria
+          e ninguém coletou. Impossível é um dado que não existe para este alvo.
+        </div>
+      </div>
+      <div class="card">
+        <h2>Maturidade do requisito</h2>
+        <table>
+          <tbody id="maturidade"></tbody>
+        </table>
+        <div class="nota">
+          Enquanto houver pergunta em aberto, existe regra que ninguém pode cobrir —
+          nem com o melhor teste do mundo.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABA 2 -->
+  <section class="aba" id="aba-2" role="tabpanel">
+    <div class="card">
+      <h2>Cobertura de regras</h2>
+      <div class="lm-topo">
+        <div class="lm-rot">Regras provadas pela suíte</div>
+        <div class="lm-val n" id="regras-pct"></div>
+      </div>
+      <div class="barra" style="margin-top:8px">
+        <i id="regras-barra"></i>
+        <span class="marca" id="regras-meta"></span>
+      </div>
+      <div class="barra-rotulo-meta" style="margin-top:6px">
+        A marca é a meta de 80% que o painel de referência usa — não uma previsão.
+      </div>
+      <div class="estados">
+        <span><i class="sw coberta"></i> coberta</span>
+        <span><i class="sw parcial"></i> parcial — <b>vale zero</b></span>
+        <span><i class="sw descoberta"></i> descoberta</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>Por área</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Área</th>
+            <th class="num col-estreita">Regras</th>
+            <th class="num col-estreita">Cobertas</th>
+            <th class="col-medida">Alcance</th>
+            <th class="num col-estreita">Parciais</th>
+          </tr>
+        </thead>
+        <tbody id="areas"></tbody>
+      </table>
+      <div class="nota">
+        Alcance e cobertura medem coisas diferentes e por isso não viram uma fração só:
+        <b id="nota-alcance"></b>. Encostar é barato, provar não é.
+      </div>
+    </div>
+
+    <div class="grade g-2" style="margin-top:16px">
+      <div class="card">
+        <h2>Cobertas</h2>
+        <div class="ids" id="ids-cobertas"></div>
+      </div>
+      <div class="card">
+        <h2>Parciais — contam zero</h2>
+        <table><tbody id="parciais-tabela"></tbody></table>
+        <div class="nota">
+          "O teste passa por ali" é exatamente a ilusão que este painel existe para desfazer.
+          Por isso elas aparecem nomeadas, em vez de escondidas no denominador.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABA 3 -->
+  <section class="aba" id="aba-3" role="tabpanel">
+    <div class="card">
+      <h2>Defeitos plantados detectados</h2>
+      <div class="lm-topo">
+        <div class="lm-rot">Dos defeitos que sabemos existir, quantos a suíte pega</div>
+        <div class="lm-val n" id="def-pct"></div>
+      </div>
+      <div class="barra" style="margin-top:8px"><i id="def-barra"></i></div>
+      <div class="nota">
+        Esta métrica só existe porque o alvo é o Swag Labs: os defeitos estão
+        <b>plantados, documentados e reproduzíveis</b>. É um gabarito — raríssimo em produto real.
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>Por conta</h2>
+      <table>
+        <thead>
+          <tr>
+            <th class="col-conta">Conta</th>
+            <th class="num col-estreita">Defeitos</th>
+            <th class="num col-estreita">Pegos</th>
+            <th class="col-medida">Detecção</th>
+            <th>Por quê</th>
+          </tr>
+        </thead>
+        <tbody id="contas"></tbody>
+      </table>
+      <div class="nota">
+        <b>O cartão que salva a métrica de virar vergonha:</b> este número não diz que a suíte é ruim,
+        diz que ela é <b>estreita</b>. Ela prova algumas regras muito bem e quase não olha para fora delas.
+        Duas frases diferentes.
+        <br><br>
+        Detalhe para quem perguntar: os preços sorteados do <span class="n">visual_user</span> não derrubariam
+        a suíte — e está certo, porque o esperado é calculado a partir do preço lido. O que passaria batido
+        é o <span class="n">$72.8</span> de uma casa decimal. Defeito de formato exige asserção de formato.
+      </div>
+    </div>
+  </section>
+
+  <!-- ABA 4 -->
+  <section class="aba" id="aba-4" role="tabpanel">
+    <div class="grade g-2">
+      <div class="card">
+        <h2>Execução</h2>
+        <table><tbody id="execucao"></tbody></table>
+      </div>
+      <div class="card">
+        <h2>Instabilidade conhecida</h2>
+        <table><tbody id="instabilidade"></tbody></table>
+        <div class="nota">
+          Entra com a contagem à vista, nunca como "flaky" sem número.
+          Uma ocorrência em seis execuções não é uma taxa — é uma ocorrência em seis execuções.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>Poder de detecção — mutação</h2>
+      <div class="chip alerta"><span class="pt"></span><span id="mut-estado"></span></div>
+      <p class="sub" style="margin:12px 0 0" id="mut-motivo"></p>
+      <table style="margin-top:14px">
+        <thead><tr><th>Mutação</th><th>Efeito observado</th><th class="num">Resultado</th></tr></thead>
+        <tbody id="mutacoes"></tbody>
+      </table>
+      <div class="nota">
+        <b id="mut-frac"></b>, e o painel não exibe isso como nota. Cem por cento que não pode dar
+        errado não é evidência. A pergunta <span class="n">PP3</span> da especificação segue aberta.
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>Perguntas em aberto deste painel</h2>
+      <table><tbody id="pp"></tbody></table>
+    </div>
+  </section>
+
+  <footer>
+    Arquivo único, sem build, sem rede, sem fonte externa. Editar o bloco JSON e recarregar basta —
+    nada é regenerado. Mede <strong>a suíte</strong>, não o produto: a loja é de terceiros e não é nossa para consertar.
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var D = JSON.parse(document.getElementById('dados').textContent);
+  var META = 80; // meta de referência, a mesma do painel existente
+
+  function pct(num, den) { return den ? (num / den) * 100 : null; }
+  function fmt(v, casas) {
+    if (v === null || v === undefined) return '—';
+    return v.toLocaleString('pt-BR', { minimumFractionDigits: casas === undefined ? 1 : casas,
+                                       maximumFractionDigits: casas === undefined ? 1 : casas });
+  }
+  function frac(num, den) { return '<span class="frac n">' + num + ' / ' + den + '</span>'; }
+  function el(id) { return document.getElementById(id); }
+
+  // ---- números derivados: tudo sai de numerador e denominador do JSON ----
+  var regras = D.regras;
+  var cobertas = regras.listaCobertas.length;
+  var parciais = regras.listaParciais.length;
+  var areas = Object.keys(regras.porArea);
+  var areasAlcancadas = areas.filter(function (a) { return regras.porArea[a].cobertas > 0; }).length;
+
+  var defTotal = D.defeitosPlantados.total;
+  var contas = Object.keys(D.defeitosPlantados.porConta);
+  var defDetectados = contas.reduce(function (s, c) { return s + D.defeitosPlantados.porConta[c].detectados; }, 0);
+
+  var valores = {
+    coberturaRegras:  { valor: pct(cobertas, regras.total),        num: cobertas,      den: regras.total },
+    deteccaoDefeitos: { valor: pct(defDetectados, defTotal),       num: defDetectados, den: defTotal },
+    alcanceAreas:     { valor: pct(areasAlcancadas, areas.length), num: areasAlcancadas, den: areas.length },
+    poderDeteccao:    { valor: null, estado: D.mutacao.estado, motivo: D.mutacao.motivo,
+                        num: D.mutacao.mortas, den: D.mutacao.aplicadas },
+    coberturaLinha:   { valor: null, estado: D.coberturaLinha.estado, motivo: D.coberturaLinha.motivo }
+  };
+
+  // ---- índice: média ponderada só dos componentes disponíveis ----
+  var somaPeso = 0, somaValor = 0, disponiveis = 0;
+  D.indice.componentes.forEach(function (c) {
+    var v = valores[c.chave];
+    if (v.valor === null) return;
+    somaPeso += c.peso;
+    somaValor += v.valor * c.peso;
+    disponiveis++;
+  });
+  var indice = somaPeso ? Math.round(somaValor / somaPeso) : null;
+
+  // ---- cabeçalho ----
+  el('cab-data').textContent = D.geradoEm.split('-').reverse().join('/');
+  el('cab-alvo').textContent = D.alvo.loja.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  el('cab-contas').textContent = D.alvo.contas.join(' · ');
+
+  // ---- aba 1 ----
+  el('indice-valor').textContent = indice;
+  el('indice-insumos').innerHTML = '<strong class="n">' + disponiveis + ' de ' + D.indice.insumosTotais +
+    '</strong> insumos entraram na conta';
+  el('cob-linha-motivo').textContent = D.coberturaLinha.motivo;
+  el('fala-pct').textContent = fmt(valores.coberturaRegras.valor) + '%';
+
+  function barra(valor, classe) {
+    var largura = valor === null ? 0 : Math.max(0, Math.min(100, valor));
+    return '<div class="barra"><i class="' + (classe || '') + (valor === null ? ' vazia' : '') +
+           '" style="width:' + (valor === null ? 100 : largura) + '%"></i></div>';
+  }
+
+  el('componentes').innerHTML = D.indice.componentes.map(function (c) {
+    var v = valores[c.chave];
+    var direita, corpo;
+    if (v.valor === null) {
+      var rotulo = v.estado === 'impossivel' ? 'impossível' : 'não entra';
+      var classeChip = v.estado === 'impossivel' ? 'impossivel' : 'alerta';
+      direita = '<span class="chip ' + classeChip + '"><span class="pt"></span>' + rotulo + '</span>' +
+                (v.den ? ' ' + frac(v.num, v.den) : '');
+      corpo = '<p class="barra-rotulo-meta" style="margin:2px 0 0">' + v.motivo + '</p>';
+    } else {
+      direita = '<span class="n">' + fmt(v.valor) + '%</span>' + frac(v.num, v.den);
+      corpo = barra(v.valor);
+    }
+    return '<div class="linha-medida"><div class="lm-topo"><div class="lm-rot">' + c.rotulo +
+           '<span class="lm-peso n">peso ' + (c.peso || '—') + '</span></div>' +
+           '<div class="lm-val">' + direita + '</div></div>' + corpo + '</div>';
+  }).join('');
+
+  var r = D.requisitos;
+  el('maturidade').innerHTML = [
+    ['Arquivos de requisito <span class="n">RQ-*.md</span> escritos', r.arquivos],
+    ['Casos de teste <span class="n">CT</span> declarados', r.ct],
+    ['<span class="n">CT</span> automatizados', r.ctAutomatizados],
+    ['Perguntas em aberto na especificação', r.perguntasEmAberto]
+  ].map(function (l) {
+    return '<tr><td>' + l[0] + '</td><td class="num n">' + l[1] + '</td></tr>';
+  }).join('');
+
+  // ---- aba 2 ----
+  var vr = valores.coberturaRegras;
+  el('regras-pct').innerHTML = '<span class="n">' + fmt(vr.valor) + '%</span>' + frac(vr.num, vr.den);
+  el('regras-barra').style.width = vr.valor + '%';
+  el('regras-meta').style.left = META + '%';
+
+  el('areas').innerHTML = areas.map(function (a) {
+    var x = regras.porArea[a];
+    var p = pct(x.cobertas, x.total);
+    var estado = x.cobertas > 0
+      ? '<span class="chip ok"><span class="pt"></span>alcançada</span>'
+      : '<span class="chip alerta"><span class="pt"></span>fora</span>';
+    return '<tr><td>' + a + '</td>' +
+           '<td class="num n">' + x.total + '</td>' +
+           '<td class="num n">' + x.cobertas + '</td>' +
+           '<td>' + barra(p) + '<div class="barra-rotulo-meta n" style="margin-top:4px">' +
+             fmt(p) + '% · ' + estado + '</div></td>' +
+           '<td class="num n">' + (x.parciais || '—') + '</td></tr>';
+  }).join('');
+
+  var va = valores.alcanceAreas;
+  el('nota-alcance').innerHTML = fmt(va.valor) + '% das áreas encostadas (' + va.num + ' de ' + va.den +
+    '), ' + fmt(vr.valor) + '% das regras provadas (' + vr.num + ' de ' + vr.den + ')';
+
+  el('ids-cobertas').innerHTML = regras.listaCobertas.map(function (id) {
+    return '<span class="id coberta">' + id + '</span>';
+  }).join('');
+
+  el('parciais-tabela').innerHTML = regras.listaParciais.map(function (id) {
+    return '<tr><td><span class="id parcial">' + id + '</span></td><td>' +
+           (regras.porqueParcial[id] || '') + '</td></tr>';
+  }).join('');
+
+  // ---- aba 3 ----
+  var vd = valores.deteccaoDefeitos;
+  el('def-pct').innerHTML = '<span class="n">' + fmt(vd.valor) + '%</span>' + frac(vd.num, vd.den);
+  el('def-barra').style.width = vd.valor + '%';
+
+  el('contas').innerHTML = contas.map(function (c) {
+    var x = D.defeitosPlantados.porConta[c];
+    var p = pct(x.detectados, x.total);
+    return '<tr><td><span class="n">' + c + '</span></td>' +
+           '<td class="num n">' + x.total + '</td>' +
+           '<td class="num n">' + x.detectados + '</td>' +
+           '<td>' + barra(p) + '<div class="barra-rotulo-meta n" style="margin-top:4px">' + fmt(p) + '%</div></td>' +
+           '<td>' + x.nota + '</td></tr>';
+  }).join('');
+
+  // ---- aba 4 ----
+  var e = D.execucao;
+  // Contagens curtas alinham à direita em monoespaçada; frases longas alinham à
+  // esquerda em texto normal. Número à direita e frase à direita na mesma coluna
+  // produzem aquele bloco irregular que ninguém consegue ler.
+  el('execucao').innerHTML = [
+    ['Arquivos de teste', e.arquivos, 'n'],
+    ['Testes', e.testes, 'n'],
+    ['Passaram', e.passou, 'n'],
+    ['Falharam', e.falhou, 'n'],
+    ['Duração total', fmt(e.duracaoSegundos) + ' s', 'n'],
+    ['Mais lento', '<span class="n">' + e.maisLento.ms + ' ms</span> · ' + e.maisLento.teste, 'texto'],
+    ['Mais rápido', '<span class="n">' + e.maisRapido.ms + ' ms</span> · ' + e.maisRapido.teste, 'texto'],
+    ['Primeira execução, máquina fria',
+      '<span class="n">' + fmt(e.primeiraExecucaoFria.segundos) + ' s</span> · ' + e.primeiraExecucaoFria.nota, 'texto']
+  ].map(function (l) {
+    var classe = l[2] === 'n' ? 'num n' : 'esq';
+    return '<tr><td>' + l[0] + '</td><td class="' + classe + '">' + l[1] + '</td></tr>';
+  }).join('');
+
+  el('instabilidade').innerHTML = e.instabilidadesConhecidas.map(function (i) {
+    return '<tr><td>' + i.descricao + '</td><td class="num n">' + i.ocorrencias + ' em ' + i.execucoes + '</td></tr>';
+  }).join('');
+
+  el('mut-estado').textContent = 'não entra no índice';
+  el('mut-motivo').textContent = D.mutacao.motivo;
+  el('mut-frac').innerHTML = D.mutacao.mortas + ' de ' + D.mutacao.aplicadas +
+    ' mutações mortas, ' + D.mutacao.sobreviventes + ' sobrevivente' +
+    (D.mutacao.sobreviventes === 1 ? '' : 's');
+
+  el('mutacoes').innerHTML = D.mutacao.lista.map(function (m) {
+    return '<tr><td>' + m.mutacao + '</td><td>' + m.efeito + '</td>' +
+           '<td class="num"><span class="chip ok"><span class="pt"></span>' + m.resultado + '</span></td></tr>';
+  }).join('');
+
+  el('pp').innerHTML = D.perguntasEmAbertoDoPainel.map(function (p) {
+    return '<tr><td>' + p + '</td></tr>';
+  }).join('');
+
+  // ---- abas e teclado ----
+  var ROTULOS = ['Visão geral', 'Regras', 'Defeitos plantados', 'Suíte'];
+  var atual = 1;
+  var nav = el('nav');
+  nav.innerHTML = ROTULOS.map(function (rot, i) {
+    return '<button role="tab" data-aba="' + (i + 1) + '" aria-selected="' + (i === 0) + '">' +
+           '<span class="n">' + (i + 1) + '</span> · ' + rot + '</button>';
+  }).join('');
+
+  function vai(n) {
+    if (n < 1 || n > ROTULOS.length) return;
+    atual = n;
+    for (var i = 1; i <= ROTULOS.length; i++) {
+      el('aba-' + i).classList.toggle('ativa', i === n);
+    }
+    Array.prototype.forEach.call(nav.children, function (b) {
+      b.setAttribute('aria-selected', String(Number(b.dataset.aba) === n));
+    });
+  }
+
+  nav.addEventListener('click', function (ev) {
+    var b = ev.target.closest('button');
+    if (b) vai(Number(b.dataset.aba));
+  });
+
+  document.addEventListener('keydown', function (ev) {
+    if (ev.ctrlKey || ev.altKey || ev.metaKey) return;
+    var k = ev.key;
+    if (k >= '1' && k <= String(ROTULOS.length)) { vai(Number(k)); return; }
+    if (k === 'ArrowRight') { vai(atual + 1); return; }
+    if (k === 'ArrowLeft') { vai(atual - 1); return; }
+    if (k === 't' || k === 'T') {
+      var raiz = document.documentElement;
+      raiz.dataset.tema = raiz.dataset.tema === 'claro' ? 'escuro' : 'claro';
+    }
+  });
+})();
+</script>
+</body>
+</html>
