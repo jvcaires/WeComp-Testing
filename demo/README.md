@@ -10,7 +10,8 @@ não some no meio da palestra**.
 | [`checkout-totais.spec.ts`](checkout-totais.spec.ts) | O resultado do ato 2 — já validado, serve de plano B |
 | `playwright.config.ts` · `package.json` | O mínimo para rodar |
 
-A teoria por trás está em [`../05-anatomia-do-pedido.md`](../05-anatomia-do-pedido.md).
+As quatro regras que sustentam este exemplo estão listadas em
+[**O que este exemplo demonstra**](#o-que-este-exemplo-demonstra), logo abaixo.
 
 ## Preparar (faça antes, não no palco)
 

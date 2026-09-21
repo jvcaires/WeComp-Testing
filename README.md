@@ -1,27 +1,25 @@
 # WeComp — IA & Testes
 
-Material para palestra / mini-curso sobre uso de assistentes de IA em QA e
-automação de testes: os números de produtividade de um mês real, dez casos
-reais, o roteiro e os gráficos prontos para slide.
+Material do mini-curso sobre uso de assistentes de IA em QA e automação de
+testes. O percurso é um só: **especificar um produto real observando-o rodar,
+transformar a especificação em testes, e medir o que os testes de fato cobrem.**
 
-**Repositório autocontido e anônimo.** Não cita empresa, produto, cliente,
-pessoas, ambientes, URLs, chaves de ticket nem regra de negócio. Os números são
-agregados; os exemplos foram reescritos em termos genéricos. Ele não tem vínculo
-com nenhum repositório de trabalho e não deve ganhar um.
+O alvo é sempre a mesma loja pública: **[`saucedemo.com`](https://www.saucedemo.com/)**
+(Swag Labs, da Sauce Labs). Ela é de demonstração, não pertence a ninguém da
+plateia, não tem dado real e não sai do ar no meio da aula.
 
 ## Por onde começar
 
 | Arquivo | O que é |
 | --- | --- |
-| [`01-numeros.md`](01-numeros.md) | Os números de produtividade, com metodologia e ressalvas |
-| [`02-casos-reais.md`](02-casos-reais.md) | 10 casos anonimizados — 5 onde a IA ganha, 5 onde ela erra |
-| [`03-roteiro.md`](03-roteiro.md) | Roteiro de 75 min, com tempos, demo ao vivo e as perguntas difíceis |
-| [`04-frases-de-efeito.md`](04-frases-de-efeito.md) | O que sustenta pergunta de plateia, e o que não sustenta |
-| [`graficos/`](graficos/) | Cinco figuras em SVG e PNG, tema claro e escuro — abra o `index.html` |
-| [`dados/metricas.json`](dados/metricas.json) | Os mesmos números em forma estruturada |
-| [`dados/metodologia.md`](dados/metodologia.md) | Como cada número foi medido, para quem perguntar |
+| [`BDD_SPECIFICATION.md`](BDD_SPECIFICATION.md) | A especificação da loja em 11 seções — 42 regras observadas no site rodando, não presumidas |
+| [`demo/`](demo/) | A demonstração ao vivo: os prompts, o teste pronto e o mínimo para rodar |
+| [`product-owner.prompt.md`](product-owner.prompt.md) | Papel de PO — como extrair requisitos de um produto que já existe |
+| [`sdet-automator.prompt.md`](sdet-automator.prompt.md) | Papel de SDET — como automatizar depois de ter executado à mão |
+| [`PAINEL_SPECIFICATION.md`](PAINEL_SPECIFICATION.md) | A especificação do painel que mede a qualidade da suíte que escrevermos |
+| `WeComp - Testado Por Quem.pptx` | Os slides da apresentação |
 
-Se for ler um só: `02-casos-reais.md`. É o que a plateia lembra.
+Se for ler um só: `BDD_SPECIFICATION.md`. Tudo o mais deriva dele.
 
 ## A tese, em três linhas
 
@@ -32,30 +30,45 @@ Se for ler um só: `02-casos-reais.md`. É o que a plateia lembra.
 3. O preço é um risco novo: teste que **parece** cobrir e não cobre, produzido em
    escala e com uma explicação convincente anexada.
 
-## Regenerar os gráficos
+## O percurso
 
-```bash
-npm run graficos        # os 10 SVGs, a partir de dados/metricas.json — sem dependências
-npm i && npm run png    # os 10 PNGs a 2×, plano B para editor que importa SVG mal
+```
+produto rodando
+      │
+      ├─ product-owner.prompt.md ──► BDD_SPECIFICATION.md      (o que o produto faz)
+      │                                      │
+      ├─ sdet-automator.prompt.md ──► demo/checkout-totais.spec.ts   (o que verificamos)
+      │                                      │
+      └─ PAINEL_SPECIFICATION.md ──► painel da suíte           (quanto disso é coberto)
 ```
 
-Os SVGs são gerados, nunca editados à mão: número e figura saem da mesma fonte e
-não podem divergir. Detalhes e decisões de desenho em
-[`graficos/README.md`](graficos/README.md).
+Cada etapa produz um artefato que a próxima consome. Nenhuma delas aceita um
+número que não tenha origem declarada.
+
+## Rodar a demo
+
+```bash
+cd demo
+npm install
+npx playwright install chromium
+npm test          # deve sair "5 passed" em ~5 segundos
+```
+
+Detalhes, prompts e o que dizer em cada momento: [`demo/README.md`](demo/README.md).
 
 ## Compliance
 
-Todo o conteúdo passou por três filtros, nesta ordem:
+O repositório é **autocontido e anônimo**. Não cita empresa, produto interno,
+cliente, colaborador, ambiente, URL privada, chave de ticket nem regra de
+negócio proprietária. O único sistema exercitado é uma loja pública de
+demonstração.
 
-1. **Nenhum identificador.** Sem nome de empresa, produto, domínio, usuário final,
-   colaborador ou chave de ticket. Onde um exemplo precisa de identificador, ele é
-   fictício.
-2. **Nenhum dado de negócio.** Sem valores reais, sem regras proprietárias, sem
-   nomes de endpoint internos. As regras foram generalizadas até deixarem de
-   descrever o sistema de origem.
-3. **Só agregados.** Números que descrevem volume e ritmo de trabalho, nunca
-   conteúdo. "187 relatórios de verificação" é agregado; o texto de qualquer um
-   deles não está aqui.
+O material de origem da palestra — as métricas de produtividade de um mês real,
+os gráficos gerados a partir delas e o painel de qualidade de um produto real —
+**não está aqui**. Ele serviu para montar os slides e permanece apenas na máquina
+de quem apresenta, ignorado via [`.gitignore`](.gitignore). É proposital: o que
+os alunos precisam é do método e do alvo público, não dos números de um produto
+que eles não podem ver.
 
-Se um slide precisar de captura de tela, **gere uma nova com dados sintéticos** —
+Se um slide novo precisar de captura de tela, **gere uma com dados sintéticos** —
 não reaproveite nada de uma execução real.

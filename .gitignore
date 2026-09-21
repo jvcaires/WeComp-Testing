@@ -1,3 +1,13 @@
 node_modules/
 .DS_Store
 Thumbs.db
+
+# Material de origem — fica só na máquina de quem apresenta.
+# Contém métricas de um produto real e a estrutura do codebase de onde elas
+# saíram. Serviu para montar os slides; não é material de aula.
+dados/
+graficos/
+painel/
+
+# Só existe para rodar os scripts de graficos/, que não é publicado.
+/package.json
