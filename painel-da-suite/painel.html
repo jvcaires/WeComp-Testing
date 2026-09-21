@@ -172,21 +172,21 @@
       "Conclusão":         { "total": 5,  "cobertas": 0, "parciais": 0 }
     },
     "porqueParcial": {
-      "VIT-1": "O teste afirma os 6 produtos, mas não nome, descrição, preço nem botão de cada um",
-      "CK1-1": "Preenche os três campos no caminho feliz, sem provar obrigatoriedade",
-      "CK2-1": "Chega ao resumo, mas não afirma a lista de itens",
-      "CAR-4": "Navega com carrinho cheio, sem afirmar a persistência"
+      "VIT-1": "O teste conta os 6 produtos, e só isso. Se amanhã sumissem a descrição e o preço de todos eles, nenhum teste reclamaria.",
+      "CK1-1": "A gente preenche os três campos e segue em frente. Nunca testamos o que acontece quando um deles fica vazio.",
+      "CK2-1": "O teste chega na tela de resumo, mas não olha a lista de itens. Se ela viesse vazia, passaria.",
+      "CAR-4": "O teste navega com o carrinho cheio, mas em nenhum momento afirma que os itens continuam lá."
     }
   },
 
   "defeitosPlantados": {
     "total": 11,
     "porConta": {
-      "problem_user":            { "total": 3, "detectados": 0, "nota": "a suíte não executa com esta conta" },
-      "error_user":              { "total": 3, "detectados": 0, "nota": "a suíte não executa com esta conta" },
-      "visual_user":             { "total": 3, "detectados": 0, "nota": "a suíte não executa com esta conta" },
-      "performance_glitch_user": { "total": 1, "detectados": 0, "nota": "a suíte entra com esta conta, mas tolera a lentidão em vez de afirmá-la" },
-      "locked_out_user":         { "total": 1, "detectados": 1, "nota": "AUT-6 afirma a mensagem de bloqueio: se a conta voltasse a entrar, o teste reprovaria" }
+      "problem_user":            { "total": 3, "detectados": 0, "nota": "Nenhum teste entra com esta conta." },
+      "error_user":              { "total": 3, "detectados": 0, "nota": "Nenhum teste entra com esta conta." },
+      "visual_user":             { "total": 3, "detectados": 0, "nota": "Nenhum teste entra com esta conta." },
+      "performance_glitch_user": { "total": 1, "detectados": 0, "nota": "A suíte entra com ela, mas só espera a demora passar — não afirma nada sobre ela. Se a lentidão sumisse hoje, nenhum teste ficaria vermelho." },
+      "locked_out_user":         { "total": 1, "detectados": 1, "nota": "AUT-6 cobra a mensagem de bloqueio. Se um dia a conta voltar a entrar, o teste reprova." }
     }
   },
 
@@ -196,13 +196,13 @@
     "sobreviventes": 0,
     "minimoParaNota": 5,
     "estado": "naoEntra",
-    "motivo": "a técnica muta o valor esperado no teste, não o produto: sobrevivente é impossível por construção",
+    "motivo": "A mutação aqui mexe no valor que o teste espera, não na loja. E só dá para mexer naquilo que o teste já afirma — ou seja, nenhuma mutação tem como sobreviver. Um placar que não pode dar errado não mede nada.",
     "lista": [
-      { "mutacao": "Alíquota 0,08 → 0,09", "efeito": "4 de 15 testes vermelhos; o do contador segue verde, e corretamente", "resultado": "morta" },
-      { "mutacao": "Produto renomeado para inexistente", "efeito": "falha com SETUP: produto \"…\" não está na vitrine", "resultado": "morta" },
-      { "mutacao": "Mensagem esperada de usuário obrigatório alterada", "efeito": "os 2 testes de AUT-3 vermelhos, e só eles", "resultado": "morta" },
-      { "mutacao": "AUT-7 volta a esperar /inventory.html", "efeito": "AUT-7 vermelho — reintroduz o erro que a especificação tinha", "resultado": "morta" },
-      { "mutacao": "Catálogo esperado de 6 para 5 produtos", "efeito": "AUT-2 e performance_glitch_user vermelhos", "resultado": "morta" }
+      { "mutacao": "Trocar a alíquota de 0,08 para 0,09", "efeito": "4 dos 15 testes ficam vermelhos. O do contador do carrinho continua verde, e com razão: ele não depende da alíquota.", "resultado": "morta" },
+      { "mutacao": "Apontar para um produto que não existe", "efeito": "Cai com SETUP: produto \"…\" não está na vitrine — em vez de parecer defeito da loja.", "resultado": "morta" },
+      { "mutacao": "Mudar a mensagem esperada de usuário obrigatório", "efeito": "Os dois testes de AUT-3 ficam vermelhos, e só eles.", "resultado": "morta" },
+      { "mutacao": "Fazer AUT-7 esperar /inventory.html de novo", "efeito": "AUT-7 fica vermelho. É o erro que a especificação trazia, recolocado de propósito.", "resultado": "morta" },
+      { "mutacao": "Esperar 5 produtos na vitrine em vez de 6", "efeito": "AUT-2 e o teste do performance_glitch_user ficam vermelhos.", "resultado": "morta" }
     ]
   },
 
@@ -216,16 +216,16 @@
     "duracaoSegundos": 14.4,
     "maisLento": { "teste": "performance_glitch_user entra, só devagar", "ms": 5577 },
     "maisRapido": { "teste": "a asserção de login bem-sucedido reprova credencial errada", "ms": 546 },
-    "primeiraExecucaoFria": { "segundos": 29.3, "nota": "lançamento de navegador, DNS e TLS — não é lentidão da suíte" },
+    "primeiraExecucaoFria": { "segundos": 29.3, "nota": "abrir o navegador pela primeira vez, resolver DNS, negociar TLS — não é a suíte que está lenta" },
     "instabilidadesConhecidas": [
-      { "descricao": "cabeçalho atrasado após navegação por clique", "ocorrencias": 1, "execucoes": 6 }
+      { "descricao": "O cabeçalho às vezes demora a acompanhar a navegação por clique.", "ocorrencias": 1, "execucoes": 6 }
     ]
   },
 
   "coberturaLinha": {
     "valor": null,
     "estado": "impossivel",
-    "motivo": "o código da loja é de terceiros — não é um dado que falta, é um dado que não existe"
+    "motivo": "O código da loja não é nosso. Não é um dado que deixamos de colher: é um dado que não existe para nós."
   },
 
   "indice": {
@@ -240,11 +240,11 @@
   },
 
   "perguntasEmAbertoDoPainel": [
-    "PP1 — a cobertura de regras deve ponderar regra por risco?",
-    "PP2 — regra parcial merece um estado próprio na barra, ou basta a lista nomeada?",
-    "PP3 — qual o mínimo de mutações para virar nota? O 5 foi escolhido, não medido",
-    "PP4 — guardar retratos anteriores para mostrar tendência?",
-    "PP5 — instabilidade conhecida entra no índice ou fica só descritiva?"
+    "PP1 — a cobertura deveria pesar cada regra pelo risco? Hoje AUT-3 e CK2-5 valem o mesmo, e claramente não valem",
+    "PP2 — regra parcial merece cor própria na barra, ou a lista com nome já resolve?",
+    "PP3 — esta técnica de mutação pode virar nota alguma vez? O mínimo de 5 foi escolhido no chute, e o problema acabou sendo outro",
+    "PP4 — guardar os retratos anteriores para mostrar tendência? Com um retrato só, a aba mentiria por falta de dado",
+    "PP5 — instabilidade conhecida entra no índice ou fica só como descrição? Hoje fica de fora"
   ]
 }
 </script>
@@ -253,7 +253,7 @@
   <header>
     <h1>Qualidade da Suíte — WeComp</h1>
     <div class="sub">
-      Do que a especificação diz que este produto faz, <strong>quanto a nossa suíte de fato prova?</strong>
+      A especificação descreve 42 regras desta loja. <strong>Quantas delas a nossa suíte realmente prova?</strong>
     </div>
     <div class="sub" style="margin-top:8px">
       Retrato de <span class="n" id="cab-data"></span> ·
@@ -277,7 +277,7 @@
         <div class="figurao azul n" id="indice-valor"></div>
         <div class="de-quantos">
           <div id="indice-insumos"></div>
-          <div class="chip alerta"><span class="pt"></span>Um índice sem essa contagem finge saber mais do que sabe</div>
+          <div class="chip alerta"><span class="pt"></span>Sem dizer isso, o número ao lado fingiria saber mais do que sabe</div>
         </div>
         <div class="nota" style="margin-top:22px">
           "Esta suíte está certa. Cada linha dela está certa. E ela prova
@@ -290,8 +290,8 @@
         <h2>Componentes</h2>
         <div id="componentes"></div>
         <div class="nota">
-          Dois componentes <b>não entram na conta</b>, e aparecem nomeados em vez de virarem zero.
-          Somar denominadores diferentes numa fração só produziria um número mais bonito e mais falso.
+          Dois componentes <b>ficaram fora da média</b>. Aparecem aqui com nome e motivo, e não como
+          zero — porque zero seria uma afirmação, e sobre esses dois a gente não tem o que afirmar.
         </div>
       </div>
     </div>
@@ -302,8 +302,8 @@
         <div class="chip impossivel"><span class="pt"></span>impossível</div>
         <p class="sub" style="margin:12px 0 0" id="cob-linha-motivo"></p>
         <div class="nota">
-          <b>Impossível</b> e <b>ausente</b> são estados diferentes. Ausente é um dado que existiria
-          e ninguém coletou. Impossível é um dado que não existe para este alvo.
+          <b>Ausente</b> e <b>impossível</b> não são a mesma coisa. Ausente é o dado que daria para
+          colher e ninguém colheu. Impossível é o dado que não existe — e nenhum esforço nosso cria.
         </div>
       </div>
       <div class="card">
@@ -312,8 +312,8 @@
           <tbody id="maturidade"></tbody>
         </table>
         <div class="nota">
-          Enquanto houver pergunta em aberto, existe regra que ninguém pode cobrir —
-          nem com o melhor teste do mundo.
+          Toda pergunta que segue em aberto é uma regra que ninguém consegue cobrir ainda.
+          Não por falta de teste bom: por falta de saber o que o produto deveria fazer.
         </div>
       </div>
     </div>
@@ -324,7 +324,7 @@
     <div class="card">
       <h2>Cobertura de regras</h2>
       <div class="lm-topo">
-        <div class="lm-rot">Regras provadas pela suíte</div>
+        <div class="lm-rot">Regras que a suíte prova</div>
         <div class="lm-val n" id="regras-pct"></div>
       </div>
       <div class="barra" style="margin-top:8px">
@@ -332,12 +332,12 @@
         <span class="marca" id="regras-meta"></span>
       </div>
       <div class="barra-rotulo-meta" style="margin-top:6px">
-        A marca é a meta de 80% que o painel de referência usa — não uma previsão.
+        O risco vertical marca os 80% que o painel antigo usa como meta. É referência, não promessa.
       </div>
       <div class="estados">
         <span><i class="sw coberta"></i> coberta</span>
         <span><i class="sw parcial"></i> parcial — <b>vale zero</b></span>
-        <span><i class="sw descoberta"></i> descoberta</span>
+        <span><i class="sw descoberta"></i> sem teste nenhum</span>
       </div>
     </div>
 
@@ -356,8 +356,8 @@
         <tbody id="areas"></tbody>
       </table>
       <div class="nota">
-        Alcance e cobertura medem coisas diferentes e por isso não viram uma fração só:
-        <b id="nota-alcance"></b>. Encostar é barato, provar não é.
+        Alcance e cobertura contam coisas diferentes, então não cabem na mesma fração:
+        <b id="nota-alcance"></b>. Chegar perto de uma área é fácil. Provar o que ela faz, não.
       </div>
     </div>
 
@@ -370,8 +370,8 @@
         <h2>Parciais — contam zero</h2>
         <table><tbody id="parciais-tabela"></tbody></table>
         <div class="nota">
-          "O teste passa por ali" é exatamente a ilusão que este painel existe para desfazer.
-          Por isso elas aparecem nomeadas, em vez de escondidas no denominador.
+          "Mas o teste passa por ali" é justamente a ilusão que este painel existe para desfazer.
+          Por isso cada parcial aparece com nome e motivo, em vez de desaparecer dentro do denominador.
         </div>
       </div>
     </div>
@@ -382,13 +382,14 @@
     <div class="card">
       <h2>Defeitos plantados detectados</h2>
       <div class="lm-topo">
-        <div class="lm-rot">Dos defeitos que sabemos existir, quantos a suíte pega</div>
+        <div class="lm-rot">Sabemos que estes defeitos existem. Quantos a suíte pega?</div>
         <div class="lm-val n" id="def-pct"></div>
       </div>
       <div class="barra" style="margin-top:8px"><i id="def-barra"></i></div>
       <div class="nota">
-        Esta métrica só existe porque o alvo é o Swag Labs: os defeitos estão
-        <b>plantados, documentados e reproduzíveis</b>. É um gabarito — raríssimo em produto real.
+        Esta conta só é possível porque o alvo é o Swag Labs, onde os defeitos foram
+        <b>plantados de propósito e estão documentados</b>. Ou seja: temos o gabarito na mão.
+        Em produto de verdade isso praticamente nunca acontece.
       </div>
     </div>
 
@@ -401,19 +402,20 @@
             <th class="num col-estreita">Defeitos</th>
             <th class="num col-estreita">Pegos</th>
             <th class="col-medida">Detecção</th>
-            <th>Por quê</th>
+            <th>Por que dá esse número</th>
           </tr>
         </thead>
         <tbody id="contas"></tbody>
       </table>
       <div class="nota">
-        <b>O cartão que salva a métrica de virar vergonha:</b> este número não diz que a suíte é ruim,
-        diz que ela é <b>estreita</b>. Ela prova algumas regras muito bem e quase não olha para fora delas.
-        Duas frases diferentes.
+        <b>Cuidado com a leitura fácil aqui.</b> Este número não está dizendo que a suíte é ruim.
+        Está dizendo que ela é <b>estreita</b>: prova muito bem o pouco que se propôs a provar, e
+        praticamente não olha para fora disso. São duas frases bem diferentes, e só a segunda é verdade.
         <br><br>
-        Detalhe para quem perguntar: os preços sorteados do <span class="n">visual_user</span> não derrubariam
-        a suíte — e está certo, porque o esperado é calculado a partir do preço lido. O que passaria batido
-        é o <span class="n">$72.8</span> de uma casa decimal. Defeito de formato exige asserção de formato.
+        Se alguém perguntar do <span class="n">visual_user</span>: os preços que ele sorteia <i>não</i>
+        derrubariam a suíte, e está correto — o valor esperado é calculado a partir do preço que estava
+        na tela. O que passa batido é outra coisa: o <span class="n">$72.8</span> com uma casa decimal só.
+        Para pegar erro de formato, precisa de uma asserção sobre formato.
       </div>
     </div>
   </section>
@@ -429,35 +431,37 @@
         <h2>Instabilidade conhecida</h2>
         <table><tbody id="instabilidade"></tbody></table>
         <div class="nota">
-          Entra com a contagem à vista, nunca como "flaky" sem número.
-          Uma ocorrência em seis execuções não é uma taxa — é uma ocorrência em seis execuções.
+          Aparece sempre com a contagem do lado, nunca como um "esse teste é instável" solto.
+          Uma ocorrência em seis execuções não dá uma taxa: dá uma ocorrência em seis execuções.
         </div>
       </div>
     </div>
 
     <div class="card" style="margin-top:16px">
-      <h2>Poder de detecção — mutação</h2>
+      <h2>Poder de detecção — o teste do teste</h2>
       <div class="chip alerta"><span class="pt"></span><span id="mut-estado"></span></div>
       <p class="sub" style="margin:12px 0 0" id="mut-motivo"></p>
       <table style="margin-top:14px">
-        <thead><tr><th>Mutação</th><th>Efeito observado</th><th class="num">Resultado</th></tr></thead>
+        <thead><tr><th>O que a gente estragou</th><th>O que acontece quando se aplica</th><th class="num">Resultado</th></tr></thead>
         <tbody id="mutacoes"></tbody>
       </table>
       <div class="nota">
-        <b id="mut-frac"></b>, e o painel não exibe isso como nota. Cem por cento que não pode dar
-        errado não é evidência. A pergunta <span class="n">PP3</span> da especificação segue aberta.
+        <b id="mut-frac"></b> — e mesmo assim isso não vira nota aqui. Cem por cento que não tinha
+        como dar errado não prova nada. A pergunta <span class="n">PP3</span> da especificação segue aberta,
+        agora com outra cara.
       </div>
     </div>
 
     <div class="card" style="margin-top:16px">
-      <h2>Perguntas em aberto deste painel</h2>
+      <h2>O que este painel ainda não resolveu</h2>
       <table><tbody id="pp"></tbody></table>
     </div>
   </section>
 
   <footer>
-    Arquivo único, sem build, sem rede, sem fonte externa. Editar o bloco JSON e recarregar basta —
-    nada é regenerado. Mede <strong>a suíte</strong>, não o produto: a loja é de terceiros e não é nossa para consertar.
+    Um arquivo só: sem build, sem servidor, sem internet, sem fonte baixada de fora. Para mudar um
+    número, edite o bloco JSON e recarregue — não há nada para regerar. E o que está em julgamento aqui é
+    <strong>a nossa suíte</strong>, não a loja: ela é de terceiros e não é nossa para consertar.
   </footer>
 </div>
 
@@ -515,8 +519,8 @@
 
   // ---- aba 1 ----
   el('indice-valor').textContent = indice;
-  el('indice-insumos').innerHTML = '<strong class="n">' + disponiveis + ' de ' + D.indice.insumosTotais +
-    '</strong> insumos entraram na conta';
+  el('indice-insumos').innerHTML = 'Saiu de <strong class="n">' + disponiveis + ' das ' +
+    D.indice.insumosTotais + '</strong> fontes de dado possíveis';
   el('cob-linha-motivo').textContent = D.coberturaLinha.motivo;
   el('fala-pct').textContent = fmt(valores.coberturaRegras.valor) + '%';
 
@@ -530,7 +534,7 @@
     var v = valores[c.chave];
     var direita, corpo;
     if (v.valor === null) {
-      var rotulo = v.estado === 'impossivel' ? 'impossível' : 'não entra';
+      var rotulo = v.estado === 'impossivel' ? 'impossível' : 'fora da média';
       var classeChip = v.estado === 'impossivel' ? 'impossivel' : 'alerta';
       direita = '<span class="chip ' + classeChip + '"><span class="pt"></span>' + rotulo + '</span>' +
                 (v.den ? ' ' + frac(v.num, v.den) : '');
@@ -546,10 +550,10 @@
 
   var r = D.requisitos;
   el('maturidade').innerHTML = [
-    ['Arquivos de requisito <span class="n">RQ-*.md</span> escritos', r.arquivos],
-    ['Casos de teste <span class="n">CT</span> declarados', r.ct],
-    ['<span class="n">CT</span> automatizados', r.ctAutomatizados],
-    ['Perguntas em aberto na especificação', r.perguntasEmAberto]
+    ['Requisitos escritos <span class="n">(RQ-*.md)</span>', r.arquivos],
+    ['Casos de teste declarados <span class="n">(CT)</span>', r.ct],
+    ['Desses casos, quantos estão automatizados', r.ctAutomatizados],
+    ['Perguntas ainda sem resposta na especificação', r.perguntasEmAberto]
   ].map(function (l) {
     return '<tr><td>' + l[0] + '</td><td class="num n">' + l[1] + '</td></tr>';
   }).join('');
@@ -575,8 +579,8 @@
   }).join('');
 
   var va = valores.alcanceAreas;
-  el('nota-alcance').innerHTML = fmt(va.valor) + '% das áreas encostadas (' + va.num + ' de ' + va.den +
-    '), ' + fmt(vr.valor) + '% das regras provadas (' + vr.num + ' de ' + vr.den + ')';
+  el('nota-alcance').innerHTML = 'a suíte encosta em ' + fmt(va.valor) + '% das áreas (' + va.num + ' de ' + va.den +
+    ') e prova ' + fmt(vr.valor) + '% das regras (' + vr.num + ' de ' + vr.den + ')';
 
   el('ids-cobertas').innerHTML = regras.listaCobertas.map(function (id) {
     return '<span class="id coberta">' + id + '</span>';
@@ -612,10 +616,10 @@
     ['Testes', e.testes, 'n'],
     ['Passaram', e.passou, 'n'],
     ['Falharam', e.falhou, 'n'],
-    ['Duração total', fmt(e.duracaoSegundos) + ' s', 'n'],
+    ['Tempo total', fmt(e.duracaoSegundos) + ' s', 'n'],
     ['Mais lento', '<span class="n">' + e.maisLento.ms + ' ms</span> · ' + e.maisLento.teste, 'texto'],
     ['Mais rápido', '<span class="n">' + e.maisRapido.ms + ' ms</span> · ' + e.maisRapido.teste, 'texto'],
-    ['Primeira execução, máquina fria',
+    ['Primeira execução, com tudo frio',
       '<span class="n">' + fmt(e.primeiraExecucaoFria.segundos) + ' s</span> · ' + e.primeiraExecucaoFria.nota, 'texto']
   ].map(function (l) {
     var classe = l[2] === 'n' ? 'num n' : 'esq';
@@ -626,11 +630,11 @@
     return '<tr><td>' + i.descricao + '</td><td class="num n">' + i.ocorrencias + ' em ' + i.execucoes + '</td></tr>';
   }).join('');
 
-  el('mut-estado').textContent = 'não entra no índice';
+  el('mut-estado').textContent = 'fora do índice, de propósito';
   el('mut-motivo').textContent = D.mutacao.motivo;
-  el('mut-frac').innerHTML = D.mutacao.mortas + ' de ' + D.mutacao.aplicadas +
-    ' mutações mortas, ' + D.mutacao.sobreviventes + ' sobrevivente' +
-    (D.mutacao.sobreviventes === 1 ? '' : 's');
+  el('mut-frac').innerHTML = 'A suíte matou ' + D.mutacao.mortas + ' das ' + D.mutacao.aplicadas +
+    ' mutações' + (D.mutacao.sobreviventes === 0 ? ', sem nenhuma sobrevivente'
+      : ', e ' + D.mutacao.sobreviventes + ' sobreviveu') + '';
 
   el('mutacoes').innerHTML = D.mutacao.lista.map(function (m) {
     return '<tr><td>' + m.mutacao + '</td><td>' + m.efeito + '</td>' +
