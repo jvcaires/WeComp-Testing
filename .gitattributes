@@ -1,0 +1,3 @@
+# O Linguist trata a pasta demo/ como documentação e a exclui das
+# estatísticas de linguagem; os testes Playwright em TypeScript devem contar.
+demo/** linguist-documentation=false
