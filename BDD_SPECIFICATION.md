@@ -193,6 +193,25 @@ Cenário: Contador reflete o conteúdo do carrinho
   Então o contador exibe "2"
   Quando removo "Sauce Labs Bike Light"
   Então o contador exibe "1"
+
+Cenário: Remover o último item faz o contador desaparecer
+  Dado que estou na vitrine com o carrinho vazio
+  E que adicionei "Sauce Labs Backpack"
+  Quando removo "Sauce Labs Backpack"
+  Então o contador do carrinho não está presente
+  E o botão daquele produto exibe "Add to cart"
+
+Cenário: O carrinho atravessa logout e novo login
+  Dado que entrei com a conta "standard_user"
+  E que adicionei "Sauce Labs Backpack" e "Sauce Labs Onesie"
+  Quando saio pelo menu lateral
+  E entro de novo com a conta "standard_user"
+  Então o contador exibe "2"
+
+Cenário: Reset App State esvazia o carrinho
+  Dado que estou na vitrine com 2 itens no carrinho
+  Quando aciono "Reset App State" no menu lateral
+  Então o contador do carrinho não está presente
 ```
 
 ---
@@ -228,7 +247,20 @@ Esquema do Cenário: Validação dos dados de entrega
     | Ana  |           |           | Error: Last Name is required   |
     | Ana  | Souza     |           | Error: Postal Code is required |
     | Ana  | Souza     | 01310-100 | o passo 2 do checkout          |
+    | Ana  | Souza     | 01310100  | o passo 2 do checkout          |
+
+Cenário: Espaço em branco conta como preenchido
+  Dado que tenho ao menos um item no carrinho
+  E que estou no passo 1 do checkout
+  Quando informo nome "  ", sobrenome "  " e CEP "  "
+  E aciono Continue
+  Então a Loja exibe o passo 2 do checkout
 ```
+
+> **Por que CK1-4 não está na tabela de exemplos.** O Gherkin apara as células de
+> `Exemplos`: uma célula com dois espaços chega ao passo como texto vazio, e o
+> cenário testaria CK1-3 em vez de CK1-4. O valor entre aspas, no próprio passo,
+> preserva os espaços.
 
 ---
 
@@ -273,7 +305,24 @@ Cenário: Totais do pedido
   Então "Item total" é a soma dos preços lidos na vitrine
   E "Tax" é 8% desse subtotal, arredondado a duas casas
   E "Total" é a soma de "Item total" e "Tax"
+
+Cenário: Pagamento e envio fixos na revisão
+  Dado que tenho ao menos um item no carrinho
+  E que informei dados de entrega válidos
+  Quando abro a revisão do pedido
+  Então a forma de pagamento é "SauceCard #31337"
+  E a forma de envio é "Free Pony Express Delivery!"
+
+Cenário: Cancelar a revisão não conclui o pedido
+  Dado que estou na revisão do pedido com "Sauce Labs Backpack" no carrinho
+  Quando aciono Cancel
+  Então a Loja exibe a vitrine
+  E o contador exibe "1"
 ```
+
+> O último passo de *Cancelar* não vem de CK2-7, que só diz "sem concluir o
+> pedido". Ele é a forma observável dessa frase: se o pedido tivesse sido
+> concluído, FIM-4 teria esvaziado o carrinho.
 
 ---
 
@@ -289,6 +338,17 @@ Cenário: Totais do pedido
 
 > **FIM-5 é um detalhe caro.** O `data-test` diz `back-to-products`, o texto na tela diz
 > `Back Home`. Requisito e teste precisam concordar sobre qual dos dois é a regra.
+
+```gherkin
+Cenário: Concluir o pedido
+  Dado que estou na revisão do pedido com "Sauce Labs Backpack" no carrinho
+  Quando aciono Finish
+  Então a Loja exibe "/checkout-complete.html"
+  E exibe "Thank you for your order!"
+  E exibe "Your order has been dispatched, and will arrive just as fast as the pony can get there!"
+  E o contador do carrinho não está presente
+  E o botão "back-to-products" tem o rótulo "Back Home"
+```
 
 ---
 
@@ -310,6 +370,33 @@ defeito real, reproduzível, que só um teste com oráculo pega.
 > mensagem, não há erro, a tela simplesmente não avança. Um teste que só verifique "não
 > apareceu erro" aprova esse comportamento. Um teste com oráculo — *o pedido chegou à tela
 > de confirmação?* — reprova.
+
+```gherkin
+Esquema do Cenário: Compra de ponta a ponta com cada conta
+  Dado que entrei com a conta "<conta>"
+  E que adicionei "Sauce Labs Backpack"
+  Quando informo nome "Ana", sobrenome "Souza" e CEP "01310-100"
+  E aciono Continue
+  E aciono Finish
+  Então a Loja exibe "Thank you for your order!"
+
+  Exemplos:
+    | conta                   |
+    | standard_user           |
+    | performance_glitch_user |
+    | problem_user            |
+    | error_user              |
+```
+
+> **Este cenário descreve o que a Loja deveria fazer, não o que ela faz.** Pelo
+> que foi observado em 2026-09-23, as duas primeiras linhas passam e as duas
+> últimas reprovam, cada uma num ponto diferente. `problem_user` trava no passo 1
+> com `Error: Last Name is required`. `error_user` perde o sobrenome também, mas
+> o passo 1 aceita e avança; a conta trava no `Finish`, que não faz nada e não
+> exibe mensagem. Esse é o resultado certo. O cenário não ganha uma coluna
+> "resultado esperado" que aceite a falha, porque aí ele passaria a especificar
+> o defeito. O levantamento completo por conta está em
+> [`RQ-010-contas-de-demonstracao.md`](RQ-010-contas-de-demonstracao.md).
 
 ---
 

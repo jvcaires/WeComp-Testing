@@ -1,5 +1,8 @@
 /**
- * O que sai do "bom pedido" de 05-anatomia-do-pedido.md.
+ * O que sai do "bom pedido" do ato 2 de prompts.md.
+ *
+ * Casos: CT-006-01 e CT-006-02 de RQ-006-checkout-totais.md, e CT-004-02 de
+ * RQ-004-carrinho.md. Cada título começa pelo CT que o teste prova.
  *
  * Alvo: loja pública de demonstração · conta padrão do próprio site.
  * Prova: a regra de imposto do checkout (8% do subtotal, 2 casas) vale para
@@ -65,7 +68,7 @@ const CARRINHOS = [
 
 test.describe('checkout — a conta cobrada corresponde ao carrinho', () => {
   for (const carrinho of CARRINHOS) {
-    test(`imposto e total com ${carrinho.nome}`, async ({ page }) => {
+    test(`CT-006-01 · imposto e total com ${carrinho.nome}`, async ({ page }) => {
       await entrar(page);
 
       // REGRA 2 — o esperado vem da ESPECIFICAÇÃO, calculado a partir dos preços
@@ -87,7 +90,7 @@ test.describe('checkout — a conta cobrada corresponde ao carrinho', () => {
     });
   }
 
-  test('a asserção de imposto reprova um valor errado (controle)', async ({ page }) => {
+  test('CT-006-02 · a asserção de imposto reprova um valor errado (controle)', async ({ page }) => {
     // REGRA 3 — controle positivo. Uma suíte cheia de asserções que nunca
     // poderiam falhar passa por uma suíte saudável. Este teste prova que a
     // comparação acima tem dentes: o imposto correto NÃO é um valor fixo.
@@ -101,7 +104,7 @@ test.describe('checkout — a conta cobrada corresponde ao carrinho', () => {
       .not.toBe(imposto(preco) + 1);
   });
 
-  test('o contador do carrinho começa ausente, não em zero', async ({ page }) => {
+  test('CT-004-02 · o contador do carrinho começa ausente, não em zero', async ({ page }) => {
     await entrar(page);
     const contador = page.getByTestId('shopping-cart-badge');
 
