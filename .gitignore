@@ -11,3 +11,6 @@ painel/
 
 # Só existe para rodar os scripts de graficos/, que não é publicado.
 /package.json
+
+# Saída do Playwright ao rodar os testes localmente.
+test-results/

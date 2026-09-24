@@ -1,8 +1,10 @@
 /**
- * Login — derivado de BDD_SPECIFICATION.md §2 (regras AUT-1 a AUT-7).
+ * Login — casos CT-001-01 a CT-001-09 de RQ-001-login.md, que consolida as
+ * regras AUT-1 a AUT-7 da BDD_SPECIFICATION.md §2. Cada título começa pelo CT
+ * que o teste prova; CT-001-10 a CT-001-13 ainda não estão automatizados.
  *
- * Nenhuma mensagem aqui foi copiada de uma execução: todas saem da tabela de
- * regras da especificação. Se o site mudar um texto, este arquivo reprova — que
+ * Nenhuma mensagem aqui foi copiada de uma execução: todas saem dos critérios
+ * de aceite do requisito. Se o site mudar um texto, este arquivo reprova — que
  * é o comportamento desejado. Um teste que lê a mensagem da tela e a compara
  * consigo mesma nunca reprova nada.
  *
@@ -15,6 +17,10 @@ import { test, expect, type Page } from '@playwright/test';
 
 const LOJA = 'https://www.saucedemo.com/';
 const SENHA_COMUM = 'secret_sauce';
+const CONTAS_PUBLICADAS = [
+  'standard_user', 'locked_out_user', 'problem_user',
+  'performance_glitch_user', 'error_user', 'visual_user',
+] as const;
 
 /**
  * REGRA 2 — o esperado vem da ESPECIFICAÇÃO (§2, tabela de regras), não da
@@ -52,11 +58,11 @@ async function tentarEntrar(page: Page, usuario: string, senha: string) {
 }
 
 test.describe('login — AUT-1 a AUT-7', () => {
-  test('AUT-1 · a tela publica as contas aceitas e a senha comum', async ({ page }) => {
+  test('CT-001-01 · AUT-1 · a tela publica as contas aceitas e a senha comum', async ({ page }) => {
     await irParaOLogin(page);
 
-    const contas = page.locator('#login_credentials');
-    const senha = page.locator('[class*="login_password"]');
+    const contas = page.getByTestId('login-credentials');
+    const senha = page.getByTestId('login-password');
 
     // REGRA 1 — pré-condição ausente FALHA, nunca pula. Se o site parar de
     // publicar as credenciais, os outros testes deste arquivo passam a depender
@@ -65,12 +71,12 @@ test.describe('login — AUT-1 a AUT-7', () => {
     await expect(contas, 'SETUP: o painel de contas aceitas não está na tela').toBeVisible();
     await expect(senha, 'SETUP: o painel da senha comum não está na tela').toBeVisible();
 
-    await expect(contas).toContainText('standard_user');
-    await expect(contas).toContainText('locked_out_user');
+    // RQ-001 1.4: as seis contas, não só as duas que os outros testes usam.
+    for (const conta of CONTAS_PUBLICADAS) await expect(contas).toContainText(conta);
     await expect(senha).toContainText(SENHA_COMUM);
   });
 
-  test('AUT-2 · login válido leva à vitrine, com o carrinho vazio', async ({ page }) => {
+  test('CT-001-02 · AUT-2 · login válido leva à vitrine, com o carrinho vazio', async ({ page }) => {
     await irParaOLogin(page);
     await tentarEntrar(page, 'standard_user', SENHA_COMUM);
 
@@ -95,11 +101,11 @@ test.describe('login — AUT-1 a AUT-7', () => {
    * a regra que a especificação marca como a mais enganosa.
    */
   const RECUSADAS = [
-    { caso: 'AUT-3 · usuário vazio e senha vazia', usuario: '', senha: '', esperada: MENSAGEM.usuarioObrigatorio },
-    { caso: 'AUT-3 · usuário vazio COM senha preenchida', usuario: '', senha: SENHA_COMUM, esperada: MENSAGEM.usuarioObrigatorio },
-    { caso: 'AUT-4 · usuário preenchido e senha vazia', usuario: 'standard_user', senha: '', esperada: MENSAGEM.senhaObrigatoria },
-    { caso: 'AUT-5 · par inexistente', usuario: 'foo', senha: 'bar', esperada: MENSAGEM.parInvalido },
-    { caso: 'AUT-6 · conta bloqueada', usuario: 'locked_out_user', senha: SENHA_COMUM, esperada: MENSAGEM.contaBloqueada },
+    { caso: 'CT-001-03 · AUT-3 · usuário vazio e senha vazia', usuario: '', senha: '', esperada: MENSAGEM.usuarioObrigatorio },
+    { caso: 'CT-001-03 · AUT-3 · usuário vazio COM senha preenchida', usuario: '', senha: SENHA_COMUM, esperada: MENSAGEM.usuarioObrigatorio },
+    { caso: 'CT-001-04 · AUT-4 · usuário preenchido e senha vazia', usuario: 'standard_user', senha: '', esperada: MENSAGEM.senhaObrigatoria },
+    { caso: 'CT-001-05 · AUT-5 · par inexistente', usuario: 'foo', senha: 'bar', esperada: MENSAGEM.parInvalido },
+    { caso: 'CT-001-06 · AUT-6 · conta bloqueada', usuario: 'locked_out_user', senha: SENHA_COMUM, esperada: MENSAGEM.contaBloqueada },
   ];
 
   for (const { caso, usuario, senha, esperada } of RECUSADAS) {
@@ -117,7 +123,7 @@ test.describe('login — AUT-1 a AUT-7', () => {
     });
   }
 
-  test('AUT-7 · página protegida sem sessão recusa e redireciona para a raiz', async ({ page }) => {
+  test('CT-001-07 · AUT-7 · página protegida sem sessão recusa e redireciona para a raiz', async ({ page }) => {
     // ARMADILHA 7 (§9) — o estado sobrevive entre cenários. Cada teste do
     // Playwright recebe um contexto novo, sem cookie herdado; é isso que faz
     // "sem sessão" significar realmente sem sessão. Se algum dia estes testes
@@ -149,7 +155,7 @@ test.describe('login — AUT-1 a AUT-7', () => {
       'a vitrine não pode ter renderizado em nenhum momento').toHaveCount(0);
   });
 
-  test('a asserção de login bem-sucedido reprova credencial errada (controle)', async ({ page }) => {
+  test('CT-001-08 · a asserção de login bem-sucedido reprova credencial errada (controle)', async ({ page }) => {
     /**
      * REGRA 3 — controle positivo. Os testes acima afirmam "entrou" e "não
      * entrou". Se o oráculo de sucesso fosse vazio — se qualquer estado
@@ -167,7 +173,7 @@ test.describe('login — AUT-1 a AUT-7', () => {
       'nem o cabeçalho de sessão ativa').toHaveCount(0);
   });
 
-  test('performance_glitch_user entra, só devagar', async ({ page }, testInfo) => {
+  test('CT-001-09 · performance_glitch_user entra, só devagar', async ({ page }, testInfo) => {
     // ARMADILHA 5 (§9) — esta conta estoura timeout curto, e só ela. §8 mediu
     // ~5 s contra ~0,4 s das demais. O timeout maior é da conta, não do arquivo:
     // afrouxar o padrão esconderia lentidão nas outras.
